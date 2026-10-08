@@ -1,1 +1,75 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Technická podpora – VDF Games</title>
+  <style>
+    /* Vycentrování celého obsahu na střed obrazovky */
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
 
+    .container {
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+    }
+
+    textarea, input {
+      width: 100%;
+      box-sizing: border-box;
+      display: block;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      padding: 8px;
+    }
+
+    textarea {
+      height: 80px;
+    }
+
+    .odpoved-box {
+      background-color: #e0e0e0;
+      padding: 20px;
+      min-height: 80px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Technická podpora – VDF Games</h1>
+    <p>Jak ti můžeme pomoct? Napiš, jaký máš problém.</p>
+
+    <label for="dotaz">Tvůj dotaz:</label>
+    <textarea id="dotaz" placeholder="Např.: Po poslední aktualizaci se mi hra nespustí..."></textarea>
+
+    <label for="email">E-mail (nepovinné):</label>
+    <input type="email" id="email" placeholder="fika@email.cz">
+
+    <button onclick="odeslat()">Odeslat dotaz</button>
+
+    <h2>Odpověď podpory:</h2>
+    <div id="odpoved" class="odpoved-box">
+      Zatím žádný dotaz.
+    </div>
+  </div>
+
+  <script>
+    function odeslat() {
+      let text = document.getElementById('dotaz').value;
+      if (text !== '') {
+        document.getElementById('odpoved').innerHTML = text;
+      }
+    }
+  </script>
+
+</body>
+</html>
