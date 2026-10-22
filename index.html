@@ -1,75 +1,58 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <title>Technická podpora – VDF Games</title>
-  <style>
-    /* Vycentrování celého obsahu na střed obrazovky */
-    body {
-      font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      background-color: rgb(255, 255, 255);
-    }
-
-    .container {
-      width: 100%;
-      max-width: 500px;
-      padding: 20px;
-    }
-
-    textarea, input {
-      width: 100%;
-      box-sizing: border-box;
-      display: block;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      padding: 8px;
-    }
-
-    textarea {
-      height: 80px;
-    }
-
-    .odpoved-box {
-      background-color: #e0e0e0;
-      padding: 20px;
-      min-height: 80px;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technická podpora – VDF Games</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome pro ikony -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <div class="background-glow"></div>
+    
+    <main class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fa-solid fa-gamepad"></i>
+                <span>VDF Games</span>
+            </div>
+            <h1>Technická podpora</h1>
+            <p class="subtitle">Jak ti můžeme pomoct? Napiš, jaký máš problém.</p>
+        </header>
 
-  <div class="container">
-    <h1>Technická podpora – VDF Games</h1>
-    <p>Jak ti můžeme pomoct? Napiš, jaký máš problém.</p>
+        <form id="supportForm" class="card">
+            <div class="form-group">
+                <label for="query">Tvůj dotaz:</label>
+                <textarea id="query" name="query" rows="4" placeholder="Popiš podrobně svůj problém..." required></textarea>
+            </div>
 
-    <label for="dotaz">Tvůj dotaz:</label>
-    <textarea id="dotaz" placeholder="Např.: Po poslední aktualizaci se mi hra nespustí..."></textarea>
+            <div class="form-group">
+                <label for="email">E-mail (nepovinné):</label>
+                <input type="email" id="email" name="email" placeholder="napriklad@email.cz">
+            </div>
 
-    <label for="email">E-mail (nepovinné):</label>
-    <input type="email" id="email" placeholder="fika@email.cz">
+            <button type="submit" id="submitBtn">
+                <span>Odeslat dotaz</span>
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </form>
 
-    <button onclick="odeslat()">Odeslat dotaz</button>
+        <!-- Zpráva s okamžitou zpětnou vazbou -->
+        <div id="feedbackMessage" class="feedback-banner hidden">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Děkujeme! Tvůj dotaz byl úspěšně odeslán.</span>
+        </div>
 
-    <h2>Odpověď podpory:</h2>
-    <div id="odpoved" class="odpoved-box">
-      Zatím žádný dotaz.
-    </div>
-  </div>
+        <!-- Sekce s odpovědí podpory -->
+        <section class="card response-card">
+            <h2>Odpověď podpory:</h2>
+            <div id="responseBox" class="response-box empty">
+                <p class="placeholder-text">Zatím nebyly odeslány žádné dotazy. Po odeslání se zde zobrazí potvrzení a simulovaná odpověď.</p>
+            </div>
+        </section>
+    </main>
 
-  <script>
-    function odeslat() {
-      let text = document.getElementById('dotaz').value;
-      if (text !== '') {
-        document.getElementById('odpoved').innerHTML = text;
-      }
-    }
-  </script>
-
+    <script src="script.js"></script>
 </body>
 </html>
