@@ -1,30 +1,25 @@
-import os
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Flask, render_template, request, jsonify
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.', static_folder='.')
 
-# Pro školní projekt povolíme CORS všude (později se dá zpřísnit)
-CORS(app)
-
-@app.get("/")
+@app.route('/')
 def home():
-    return "VDF Support Backend is running"
+    return render_template('index.html')
 
-@app.post("/chat")
-def chat():
-    data = request.get_json(silent=True) or {}
-    message = (data.get("message") or "").strip()
-    student = (data.get("student") or "unknown").strip()
+@app.route('/api/support', methods=['POST'])
+def support():
+    data = request.get_json()
+    query = data.get('query', '')
+    email = data.get('email', '')
 
-    if not message:
-        return jsonify({"error": "message is required"}), 400
+    print(f"[NOVÝ DOTAZ] E-mail: {email} | Dotaz: {query}")
 
-    # Zatím fake odpověď (fáze BACKEND)
-    reply = f"[DEMO] Přijal jsem dotaz od {student}: {message}"
+    return jsonify({
+        "status": "success",
+        "message": "Dotaz byl přijat.",
+        "query": query,
+        "email": email
+    })
 
-    return jsonify({"reply": reply})
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", "8000"))
-    app.run(host="0.0.0.0", port=port, debug=True)
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
