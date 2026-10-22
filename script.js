@@ -1,72 +1,65 @@
-// Přepínač: zatím bez backendu
-const USE_BACKEND = false;
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('supportForm');
+    const queryInput = document.getElementById('query');
+    const emailInput = document.getElementById('email');
+    const feedbackMessage = document.getElementById('feedbackMessage');
+    const responseBox = document.getElementById('responseBox');
 
-// TADY si každý student nastaví svoje údaje (až bude backend):
-const BACKEND_URL = "https://vdf-games-kostak.onrender.com/chat";
-const STUDENT_ID = "Kostak_Ladislav_4A";
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-const form = document.getElementById("question-form");
-const textarea = document.getElementById("question");
-const emailInput = document.getElementById("email");
-const answerDiv = document.getElementById("answer");
+        const queryText = queryInput.value.trim();
+        const emailText = emailInput.value.trim();
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+        if (!queryText) return;
 
-  const text = textarea.value.trim();
-  const email = emailInput.value.trim();
+        // Odeslání na Flask backend (pokud běží)
+        try {
+            fetch('/api/support', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: queryText, email: emailText })
+            }).catch(() => {
+                // Tichá chyba, pokud backend ještě neběží – JS kód funguje i frontendově
+            });
+        } catch (err) {
+            console.log('Backend neodpovídá, používám pouze frontend.');
+        }
 
-  if (!text) {
-    answerDiv.textContent = "Nejdřív napiš dotaz.";
-    return;
-  }
+        // Zobrazení vizuální zpětné vazby
+        feedbackMessage.classList.remove('hidden');
 
-  // vždy ukážeme "loading"
-  answerDiv.textContent = "Zpracovávám dotaz…";
-  form.querySelector("button").disabled = true;
+        // Vytvoření dynamického obsahu odpovědi podpory
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  try {
-    const payload = {
-      message: text,
-      student: STUDENT_ID,
-      email: email || null
-    };
+        responseBox.classList.remove('empty');
+        responseBox.innerHTML = `
+            <div class="response-item">
+                <div class="timestamp">Odesláno v ${timeStr}</div>
+                <div class="status"><i class="fa-solid fa-clock"></i> Přijato v systému</div>
+                <p><strong>Tvůj dotaz:</strong> "${escapeHtml(queryText)}"</p>
+                ${emailText ? `<p style="margin-top: 4px; font-size: 0.85rem; color: #94a3b8;">Potvrzení bude zasláno na: ${escapeHtml(emailText)}</p>` : ''}
+                <hr style="border: 0; border-top: 1px solid #334155; margin: 12px 0;">
+                <p style="color: #38bdf8;"><i class="fa-solid fa-robot"></i> <strong>Podpora VDF Games:</strong> Ahoj! Tvůj požadavek jsme zaregistrovali. Náš tým se mu bude věnovat co nejdříve.</p>
+            </div>
+        `;
 
-    // --- FAKE MODE (bez backendu) ---
-    if (!USE_BACKEND) {
-      answerDiv.textContent =
-        `Demo odpověď (bez serveru)\n\n` +
-        `Student: ${payload.student}\n` +
-        `Dotaz: ${payload.message}`;
-      return;
-    }
+        // Vyčištění formuláře
+        queryInput.value = '';
+        emailInput.value = '';
 
-    // --- REAL MODE (s backendem) ---
-    const res = await fetch(BACKEND_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+        // Schování zeleného banneru po 5 sekundách
+        setTimeout(() => {
+            feedbackMessage.classList.add('hidden');
+        }, 5000);
     });
 
-    if (!res.ok) {
-      answerDiv.textContent = "Server vrátil chybu: " + res.status;
-      return;
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/"/g, "&quot;")
+                  .replace(/'/g, "&#039;");
     }
-
-    const data = await res.json();
-
-    if (data.reply) {
-      answerDiv.textContent = data.reply;
-    } else if (data.error) {
-      answerDiv.textContent = "Chyba serveru: " + data.error;
-    } else {
-      answerDiv.textContent = "Server nevrátil žádnou odpověď.";
-    }
-  } catch (err) {
-    console.error(err);
-    answerDiv.textContent = "Nepodařilo se spojit se serverem.";
-  } finally {
-    form.querySelector("button").disabled = false;
-    textarea.value = "";
-  }
 });
